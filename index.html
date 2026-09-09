@@ -80,8 +80,10 @@
     .card{padding:12px 13px}.card .v{font-size:24px}.card .s{font-size:11px}
     .card:first-child{grid-column:1/-1}
     .panel{padding:14px}
-    .tablewrap table{min-width:0;font-size:12px}
-    th,td{padding:7px 4px}
+    .tablewrap{margin:0 -14px;padding:0 14px}
+    .tablewrap table{min-width:0;font-size:11.5px;width:100%}
+    th,td{padding:7px 3px;white-space:nowrap}
+    th{font-size:9px;letter-spacing:.06em}
     .hm{display:none}
     .callbtn{grid-template-columns:1fr auto;grid-template-areas:"t d" "n n" "o o";gap:3px 10px;padding:11px 2px}
     .callbtn .t{grid-area:t}.callbtn .d{grid-area:d;display:block}.callbtn .n{grid-area:n;display:block;font-size:13px}.callbtn .o{grid-area:o;font-size:12.5px}
@@ -255,9 +257,9 @@ function render(){
     ${cur?`<div class="planbar${cur.over?" over":""}" style="margin-top:14px"><span style="width:${Math.min(100,Math.round(cur.completed/(p.included||300)*100))}%"></span></div>
     <div class="planrow"><span><b style="color:#e6ebf5">${cur.completed}</b> of ${p.included||300} completed calls in ${monthName(cur.m)}</span>
     <span>${cur.over?`<b class="over">${cur.over} over · ${money(cur.overage)}</b>`:`${(p.included||300)-cur.completed} remaining`}</span></div>`:""}
-    <div class="tablewrap"><table><tr><th>Month</th><th class="n hm">Dialed</th><th class="n">Completed</th><th class="n hm">Conversations</th><th class="n hm">Qualified</th><th class="n">Over</th><th class="n">Overage</th><th class="n hm">Service fee</th><th class="n">Total</th></tr>
-    ${bill.map(b=>`<tr class="${b.m===(PERIOD==="this"?thisMonth():PERIOD)?"sel":""}"><td>${monthName(b.m).replace(" 20"," '")}${b.current?' <span class="tag">now</span>':""}</td><td class="n hm">${b.calls}</td><td class="n">${b.completed}</td><td class="n hm">${b.conversations}</td><td class="n hm">${b.qualified}</td><td class="n${b.over?" over":""}">${b.over||"—"}</td><td class="n${b.over?" over":""}">${b.over?money(b.overage):"—"}</td><td class="n hm">${b.fee?money(b.fee):"—"}</td><td class="n">${money(b.total)}</td></tr>`).join("")}
-    <tr class="tot"><td>Since launch</td><td class="n hm">${bill.reduce((s,b)=>s+b.calls,0)}</td><td class="n">${bill.reduce((s,b)=>s+b.completed,0)}</td><td class="n hm">${bill.reduce((s,b)=>s+b.conversations,0)}</td><td class="n hm">${bill.reduce((s,b)=>s+b.qualified,0)}</td><td class="n">${bill.reduce((s,b)=>s+b.over,0)||"—"}</td><td class="n">${money(bill.reduce((s,b)=>s+b.overage,0))}</td><td class="n hm">${money(bill.reduce((s,b)=>s+b.fee,0))}</td><td class="n">${money(bill.reduce((s,b)=>s+b.total,0))}</td></tr></table></div>
+    <div class="tablewrap"><table><tr><th>Month</th><th class="n hm">Dialed</th><th class="n">Calls</th><th class="n hm">Conversations</th><th class="n hm">Qualified</th><th class="n">Over</th><th class="n">Overage</th><th class="n hm">Service fee</th><th class="n">Total</th></tr>
+    ${bill.map(b=>`<tr class="${b.m===(PERIOD==="this"?thisMonth():PERIOD)?"sel":""}"><td>${monthName(b.m).slice(0,3)} ${b.m.slice(0,4)}${b.current?' <span class="tag">now</span>':""}</td><td class="n hm">${b.calls}</td><td class="n">${b.completed}</td><td class="n hm">${b.conversations}</td><td class="n hm">${b.qualified}</td><td class="n${b.over?" over":""}">${b.over||"—"}</td><td class="n${b.over?" over":""}">${b.over?money(b.overage):"—"}</td><td class="n hm">${b.fee?money(b.fee):"—"}</td><td class="n">${money(b.total)}</td></tr>`).join("")}
+    <tr class="tot"><td>Total</td><td class="n hm">${bill.reduce((s,b)=>s+b.calls,0)}</td><td class="n">${bill.reduce((s,b)=>s+b.completed,0)}</td><td class="n hm">${bill.reduce((s,b)=>s+b.conversations,0)}</td><td class="n hm">${bill.reduce((s,b)=>s+b.qualified,0)}</td><td class="n">${bill.reduce((s,b)=>s+b.over,0)||"—"}</td><td class="n">${money(bill.reduce((s,b)=>s+b.overage,0))}</td><td class="n hm">${money(bill.reduce((s,b)=>s+b.fee,0))}</td><td class="n">${money(bill.reduce((s,b)=>s+b.total,0))}</td></tr></table></div>
     <p class="hint" style="margin-top:10px">Overage is calculated from the call platform; invoices come from Last Minute Media Deals. Questions: rich@lastminutemediadeals.com.</p>
   </div>
 
