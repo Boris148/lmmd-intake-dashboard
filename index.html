@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>AI Intake Dashboard — Last Minute Media Deals</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"Helvetica Neue",-apple-system,BlinkMacSystemFont,Arial,sans-serif;background:#0b1220;color:#eef1f7;-webkit-font-smoothing:antialiased}
+  a{color:#c9b56a}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+  header{border-bottom:1px solid rgba(255,255,255,.09);background:linear-gradient(180deg,#0f1930,#0b1220)}
+  .bar{display:flex;align-items:center;justify-content:space-between;padding:18px 0;gap:16px}
+  .bar img{height:38px;display:block;border-radius:4px}
+  .bar .who{text-align:right;font-size:11px;color:#9aa3ba;line-height:1.6}
+  .hero{padding:26px 0 30px}
+  .eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:#c9b56a}
+  h1{font-size:34px;font-weight:700;letter-spacing:-.4px;margin-top:10px}
+  .sub{color:#9aa3ba;font-size:14px;margin-top:10px;line-height:1.6;max-width:640px}
+  main{padding:26px 0 60px}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+  .tab{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:#c3cade;border-radius:999px;padding:9px 16px;font-size:13px;cursor:pointer;transition:.15s}
+  .tab:hover{border-color:rgba(255,255,255,.3)}
+  .tab.on{border-color:#c9b56a;background:rgba(201,181,106,.16);color:#fff}
+  .updated{font-size:11px;color:#78819a;margin:12px 0 18px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+  .card{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:16px 18px}
+  .card .l{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#8d96ad}
+  .card .v{font-size:30px;font-weight:700;margin-top:7px;letter-spacing:-.5px}
+  .card .s{font-size:11.5px;color:#8d96ad;margin-top:5px;line-height:1.45}
+  .card.gold .v{color:#d8c27c}
+  .panel{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:20px;margin-top:22px}
+  .panel h2{font-size:15px;font-weight:600}
+  .panel .hint{font-size:11.5px;color:#78819a;margin-top:4px}
+  .legend{font-size:11px;color:#8d96ad}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:middle;margin-right:5px}
+  .head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
+  .plan{margin-top:14px}
+  .planbar{height:9px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden}
+  .planbar span{display:block;height:100%;background:linear-gradient(90deg,#c9b56a,#e0cf94)}
+  .planbar.over span{background:linear-gradient(90deg,#e0a06a,#e07a6a)}
+  .planrow{display:flex;justify-content:space-between;font-size:12px;color:#9aa3ba;margin-top:9px}
+  .call{border-top:1px solid rgba(255,255,255,.075)}
+  .call:first-child{border-top:0}
+  .callbtn{width:100%;background:none;border:0;color:inherit;text-align:left;cursor:pointer;display:grid;grid-template-columns:150px 1fr 150px 60px;gap:12px;align-items:center;padding:13px 2px;font:inherit}
+  .callbtn:hover{background:rgba(255,255,255,.03)}
+  .t{font-size:12.5px;color:#9aa3ba}
+  .n{font-size:13.5px}
+  .n .meta{color:#78819a}
+  .o{font-size:13px;font-weight:600}
+  .o.q{color:#d8c27c}.o.u{color:#e0a06a}.o.p{color:#78819a}.o.c{color:#cfd6e6}
+  .d{font-size:12.5px;color:#78819a;text-align:right}
+  .tag{display:inline-block;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#9aa3ba;border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:2px 7px;margin-left:8px}
+  .body{padding:0 2px 16px;font-size:13.5px;color:#b9c1d4;line-height:1.6}
+  .body .urg{color:#e0a06a;margin-bottom:8px}
+  audio{width:100%;margin-top:12px}
+  .play{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.05);color:#e6ebf5;border-radius:8px;padding:7px 14px;font-size:12px;cursor:pointer;margin-top:10px}
+  .gate{max-width:520px;margin:60px auto;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:28px}
+  .gate label{display:block;font-size:13px;color:#c3cade;margin-bottom:9px}
+  .gate input{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:12px 14px;color:#fff;font-size:14px;outline:none}
+  .gate input:focus{border-color:#c9b56a}
+  .gate button{width:100%;margin-top:16px;background:#c9b56a;color:#10192c;border:0;border-radius:10px;padding:13px;font-size:14px;font-weight:700;cursor:pointer}
+  .msg{background:rgba(224,122,106,.1);border:1px solid rgba(224,122,106,.3);color:#f0c4bb;border-radius:10px;padding:14px 16px;font-size:13.5px}
+  footer{border-top:1px solid rgba(255,255,255,.08);padding:22px 0;font-size:11px;color:#69728a;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  @media(max-width:720px){
+    h1{font-size:26px}
+    .callbtn{grid-template-columns:1fr auto;gap:6px}
+    .callbtn .n,.callbtn .d{display:none}
+  }
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="bar">
+    <img src="lmm-logo.jpg" alt="Last Minute Media Deals">
+    <div class="who" id="who"></div>
+  </div>
+  <div class="hero">
+    <p class="eyebrow">AI Intake Dashboard</p>
+    <h1 id="title">Loading…</h1>
+    <p class="sub" id="sub"></p>
+  </div>
+</div></header>
+<main class="wrap" id="main"></main>
+<footer class="wrap">
+  <span>Produced by <b style="color:#8d96ad">Last Minute Media Deals</b> · rich@lastminutemediadeals.com</span>
+  <span id="stamp"></span>
+</footer>
+
+<script>
+const POINTER="https://boris148.github.io/se-portal/endpoint.json";
+const KEY="lmmd_portal_token";
+let API=null,TOKEN=null,DATA=null,RANGE="week";
+
+const q=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const dur=s=>{if(!s)return"0:00";const m=Math.floor(s/60);return m+":"+String(s%60).padStart(2,"0")};
+const tel=p=>{const d=String(p||"").replace(/\D/g,"").slice(-10);return d.length===10?`(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`:(p||"")};
+const when=iso=>new Date(iso).toLocaleString(undefined,{weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
+
+async function base(){if(API)return API;const r=await fetch(POINTER+"?t="+Date.now(),{cache:"no-store"});if(!r.ok)throw new Error("The dashboard is temporarily unavailable. Please try again shortly.");const j=await r.json();if(!j.api)throw new Error("The dashboard is temporarily unavailable. Please try again shortly.");API=j.api;return API}
+
+function gate(msg){
+  q("#title").textContent="Your intake dashboard";
+  q("#sub").textContent="Open the private link from your welcome email, or paste it below.";
+  q("#main").innerHTML=`<div class="gate">${msg?`<div class="msg" style="margin-bottom:18px">${esc(msg)}</div>`:""}
+    <label for="k">Dashboard link or access code</label>
+    <input id="k" placeholder="https://…/?c=…" autocomplete="off">
+    <button id="go">Open dashboard</button>
+    <p style="font-size:11.5px;color:#78819a;margin-top:14px">Need a new link? Email rich@lastminutemediadeals.com.</p></div>`;
+  q("#go").onclick=()=>{const v=q("#k").value.trim();const m=v.match(/[?&]c=([A-Za-z0-9_-]+)/);const t=m?m[1]:v;if(!t)return;localStorage.setItem(KEY,t);location.search="?c="+encodeURIComponent(t)};
+  q("#k").addEventListener("keydown",e=>{if(e.key==="Enter")q("#go").click()});
+}
+
+function stat(l,v,s,gold){return `<div class="card${gold?" gold":""}"><div class="l">${l}</div><div class="v">${v}</div>${s?`<div class="s">${s}</div>`:""}</div>`}
+
+function chart(daily){
+  const max=Math.max(1,...daily.map(d=>d.calls)),W=900,H=170,pad=8,bw=(W-pad*2)/daily.length;
+  let g="";
+  daily.forEach((d,i)=>{
+    const h=d.calls/max*H,hb=d.booked/max*H,x=pad+i*bw;
+    g+=`<rect x="${x+2}" y="${H-h}" width="${bw-4}" height="${h}" rx="3" fill="rgba(255,255,255,.17)"></rect>`;
+    if(hb>0)g+=`<rect x="${x+2}" y="${H-hb}" width="${bw-4}" height="${hb}" rx="3" fill="#c9b56a"></rect>`;
+    if(i%5===0)g+=`<text x="${x+bw/2}" y="${H+20}" text-anchor="middle" font-size="11" fill="rgba(255,255,255,.45)">${d.date.slice(5).replace("-","/")}</text>`;
+  });
+  return `<svg viewBox="0 0 ${W} ${H+28}" style="width:100%" role="img" aria-label="Calls per day, last 30 days">${g}</svg>`;
+}
+
+function cls(o){return /Qualified/.test(o)?"q":/Urgent/.test(o)?"u":/No answer|Poor/.test(o)?"p":"c"}
+
+function render(){
+  const d=DATA,t=d.totals[RANGE],p=d.plan||{};
+  q("#who").innerHTML=`Prepared for<br><b style="color:#c3cade">${esc(d.client.business)}</b>`;
+  q("#title").textContent=d.client.business;
+  q("#sub").textContent=`${d.client.agent_name||"Your AI intake assistant"} on ${d.client.line}. Answering your intake line and calling every new lead back within minutes, day and night. Live data, refreshed automatically.`;
+  q("#stamp").textContent="Updated "+new Date(d.generated_at).toLocaleTimeString();
+  const label=RANGE==="today"?"Today":RANGE==="week"?"Last 7 days":"Last 30 days";
+  const used=p.month_completed||0,inc=p.included||300,pct=Math.min(100,Math.round(used/inc*100)),over=Math.max(0,used-inc);
+  q("#main").innerHTML=`
+  <div class="tabs">
+    ${["today","week","month"].map(r=>`<button class="tab${r===RANGE?" on":""}" data-r="${r}">${r==="today"?"Today":r==="week"?"Last 7 days":"Last 30 days"}</button>`).join("")}
+  </div>
+  <div class="updated">${label} · ${t.inbound} inbound to your line · ${t.outbound} callbacks to new leads</div>
+  <div class="cards">
+    ${stat("Calls handled",t.completed,`${t.calls} dialed or received`)}
+    ${stat("Conversations",t.conversations,"Reached a person for a minute or more")}
+    ${stat("Qualified leads",t.qualified,"Rated good or fair, notes in Lead Docket",1)}
+    ${stat("Urgent callbacks",t.urgent,"Asked the firm to call same day")}
+    ${stat("Avg call length",dur(t.avg_secs),`${Math.round(t.secs/60)} minutes on the phone`)}
+  </div>
+
+  <div class="panel plan">
+    <div class="head"><div><h2>${esc(p.month_label||"This month")} plan usage</h2>
+    <p class="hint">Your plan includes ${inc} completed calls each month. Additional completed calls are $${(p.overage||1.5).toFixed(2)} each.</p></div></div>
+    <div class="planbar${over?" over":""}" style="margin-top:14px"><span style="width:${pct}%"></span></div>
+    <div class="planrow"><span><b style="color:#e6ebf5">${used}</b> of ${inc} completed calls used</span>
+    <span>${over?`<b style="color:#e0a06a">${over} over · $${(over*(p.overage||1.5)).toFixed(2)}</b>`:`${inc-used} remaining`}</span></div>
+  </div>
+
+  <div class="panel">
+    <div class="head"><h2>Call volume, last 30 days</h2>
+      <p class="legend"><i style="background:rgba(255,255,255,.25)"></i>all calls <span style="margin-left:14px"></span><i style="background:#c9b56a"></i>conversations</p></div>
+    <div style="margin-top:14px">${chart(d.daily)}</div>
+  </div>
+
+  <div class="panel">
+    <h2>Recent calls</h2>
+    <p class="hint">Tap any call to read the summary and listen to the recording.</p>
+    <div style="margin-top:12px">${d.recent.length?d.recent.map((c,i)=>`
+      <div class="call">
+        <button class="callbtn" data-i="${i}">
+          <span class="t">${when(c.time)}<span class="tag">${esc(c.direction||"")}</span></span>
+          <span class="n">${esc(c.caller_name||tel(c.caller)||"Unknown caller")}${c.service?`<span class="meta"> · ${esc(c.service)}</span>`:""}</span>
+          <span class="o ${cls(c.outcome)}">${esc(c.outcome)}</span>
+          <span class="d">${dur(c.duration)}</span>
+        </button>
+        <div class="body" id="b${i}" hidden></div>
+      </div>`).join(""):`<p style="color:#8d96ad;font-size:13.5px;padding:14px 0">No calls in this period yet.</p>`}</div>
+  </div>`;
+  document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{RANGE=b.dataset.r;render()});
+  document.querySelectorAll(".callbtn").forEach(b=>b.onclick=()=>{
+    const i=b.dataset.i,c=DATA.recent[i],el=q("#b"+i);
+    if(!el.hidden){el.hidden=true;return}
+    el.hidden=false;
+    el.innerHTML=`${c.appointment?`<p class="urg">${esc(c.appointment)}</p>`:""}
+      <p>${esc(c.summary||"No summary available for this call.")}</p>
+      ${c.has_audio?`<button class="play">Play recording</button>`:""}`;
+    const pb=el.querySelector(".play");
+    if(pb)pb.onclick=async()=>{const a=document.createElement("audio");a.controls=true;a.preload="none";a.src=`${API}/portal/${encodeURIComponent(TOKEN)}/audio/${c.id}`;pb.replaceWith(a)};
+  });
+}
+
+async function load(){
+  const r=await fetch(`${await base()}/portal/${encodeURIComponent(TOKEN)}`);
+  if(r.status===404){localStorage.removeItem(KEY);return gate("That dashboard link isn't valid. Check the link from your welcome email.")}
+  if(!r.ok)throw new Error("Couldn't load your dashboard right now. Please try again in a minute.");
+  DATA=await r.json();render();
+}
+
+(async()=>{
+  const u=new URLSearchParams(location.search).get("c");
+  TOKEN=u||localStorage.getItem(KEY);
+  if(u)localStorage.setItem(KEY,u);
+  if(!TOKEN)return gate();
+  try{await load();setInterval(()=>load().catch(()=>{}),120000)}
+  catch(e){gate(e.message)}
+})();
+</script>
+</body>
+</html>
