@@ -165,8 +165,8 @@ function render(){
   </div>
 
   <div class="panel">
-    <h2>Recent calls</h2>
-    <p class="hint">Tap any call to read the summary and listen to the recording.</p>
+    <h2>Recent connected calls</h2>
+    <p class="hint">Every call that connected. Tap one to read the summary and listen to the recording. Dials that rang out are counted above but not listed here.</p>
     <div style="margin-top:12px">${d.recent.length?d.recent.map((c,i)=>`
       <div class="call">
         <button class="callbtn" data-i="${i}">
