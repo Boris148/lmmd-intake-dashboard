@@ -141,7 +141,7 @@ const tel=p=>{const d=String(p||"").replace(/\D/g,"").slice(-10);return d.length
 const when=iso=>new Date(iso).toLocaleString(undefined,{weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
 const money=n=>"$"+n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
 const monthName=m=>new Date(m+"-15T12:00:00").toLocaleString(undefined,{month:"long",year:"numeric"});
-const OUTCOMES=[["all","All outcomes"],["qualified","Qualified"],["urgent","Urgent callback"],["conversation","Conversations"],["voicemail","Voicemail / brief"],["poor","Poor fit"],["noanswer","No answer"]];
+const OUTCOMES=[["all","All outcomes"],["qualified","Qualified"],["urgent","Urgent callback"],["conversation","Completed (spoke with a person)"],["voicemail","Voicemail / screener"],["poor","Poor fit"],["noanswer","No answer"]];
 
 async function base(){if(API)return API;const r=await fetch(POINTER+"?t="+Date.now(),{cache:"no-store"});if(!r.ok)throw new Error("The dashboard is temporarily unavailable. Please try again shortly.");const j=await r.json();if(!j.api)throw new Error("The dashboard is temporarily unavailable. Please try again shortly.");API=j.api;return API}
 
@@ -171,15 +171,15 @@ function periodRows(){
 }
 function outcomeOk(r){
   switch(OUTCOME){case"qualified":return r.qualified;case"urgent":return r.urgent;case"conversation":return r.conversation;
-    case"voicemail":return r.completed&&!r.conversation;case"poor":return r.quality==="POOR";case"noanswer":return !r.completed;default:return true}
+    case"voicemail":return !!r.picked_up&&!r.completed;case"poor":return r.quality==="POOR";case"noanswer":return !r.picked_up;default:return true}
 }
 function filtered(){
   const s=SEARCH.trim().toLowerCase();
   return periodRows().filter(r=>(CHANNEL==="all"||r.channel===CHANNEL)&&outcomeOk(r)&&(!s||(r.name||"").toLowerCase().includes(s)||(r.phone||"").includes(s)||(r.case_type||"").toLowerCase().includes(s)||(r.summary||"").toLowerCase().includes(s)));
 }
 function agg(rows){
-  const a={calls:rows.length,completed:0,conversations:0,qualified:0,urgent:0,inbound:0,outbound:0,secs:0};
-  rows.forEach(r=>{a.completed+=r.completed;a.conversations+=r.conversation;a.qualified+=r.qualified;a.urgent+=r.urgent;a.inbound+=r.direction==="Inbound";a.outbound+=r.direction!=="Inbound";a.secs+=r.duration});
+  const a={calls:rows.length,completed:0,conversations:0,qualified:0,urgent:0,inbound:0,outbound:0,secs:0,picked:0,vm:0};
+  rows.forEach(r=>{a.completed+=r.completed;a.conversations+=r.conversation;a.picked+=!!r.picked_up;a.vm+=(!!r.picked_up&&!r.completed);a.qualified+=r.qualified;a.urgent+=r.urgent;a.inbound+=r.direction==="Inbound";a.outbound+=r.direction!=="Inbound";a.secs+=r.duration});
   a.avg=a.completed?Math.round(a.secs/a.completed):0;return a;
 }
 function billing(){
@@ -188,7 +188,7 @@ function billing(){
   return ms.filter(m=>!p.first_month||m>=p.first_month).map(m=>{
     const rows=DATA.rows.filter(r=>r.month===m),a=agg(rows),over=Math.max(0,a.completed-inc);
     const fee=m===p.first_month?(p.first_month_fee||p.monthly_fee||0):(p.monthly_fee||0);
-    return {m,calls:a.calls,completed:a.completed,conversations:a.conversations,qualified:a.qualified,over,overage:over*ov,fee,total:fee+over*ov,current:m===thisMonth()};
+    return {m,calls:a.calls,completed:a.completed,vm:a.vm,conversations:a.conversations,qualified:a.qualified,over,overage:over*ov,fee,total:fee+over*ov,current:m===thisMonth()};
   }).reverse();
 }
 function chart(rows){
@@ -247,8 +247,8 @@ function render(){
   ${d.building?`<p class="building">Still importing older calls in the background. Numbers will fill in as it finishes.</p>`:""}
   <div class="updated" style="margin-top:16px">${label}${CHANNEL!=="all"||OUTCOME!=="all"||SEARCH?` · filtered to ${rows.length} of ${pr.length} calls`:""} · ${t.inbound} inbound · ${t.outbound} callbacks</div>
   <div class="cards">
-    ${stat("Calls handled",t.completed,`${t.calls} dialed or received`)}
-    ${stat("Conversations",t.conversations,"Reached a person for a minute or more")}
+    ${stat("Completed calls",t.completed,`${t.calls} dialed or received · ${t.picked} picked up`)}
+    ${stat("Voicemails left",t.vm,"Picked up by voicemail or a screener")}
     ${stat("Qualified leads",t.qualified,"Rated good or fair, notes in Lead Docket",1)}
     ${stat("Urgent callbacks",t.urgent,"Asked the firm to call same day")}
     ${stat("Avg call length",dur(t.avg),`${Math.round(t.secs/60)} minutes on the phone`)}
@@ -256,19 +256,19 @@ function render(){
 
   <div class="panel">
     <div class="head"><div><h2>Plan &amp; billing</h2>
-    <p class="hint">${p.included||300} completed calls included each month; additional completed calls ${money(p.overage||1.5)} each. A completed call connected for 20 seconds or more.</p></div></div>
+    <p class="hint">${p.included||300} completed intake calls included each month; additional completed calls ${money(p.overage||1.5)} each. A completed call is one where a real person spoke with ${esc(d.client.agent_name||"the assistant")}. Voicemails, screeners and no-answers are not counted.</p></div></div>
     ${cur?`<div class="planbar${cur.over?" over":""}" style="margin-top:14px"><span style="width:${Math.min(100,Math.round(cur.completed/(p.included||300)*100))}%"></span></div>
-    <div class="planrow"><span><b style="color:#e6ebf5">${cur.completed}</b> of ${p.included||300} completed calls in ${monthName(cur.m)}</span>
+    <div class="planrow"><span><b style="color:#e6ebf5">${cur.completed}</b> of ${p.included||300} completed intake calls in ${monthName(cur.m)}</span>
     <span>${cur.over?`<b class="over">${cur.over} over · ${money(cur.overage)}</b>`:`${(p.included||300)-cur.completed} remaining`}</span></div>`:""}
-    <div class="tablewrap"><table><tr><th>Month</th><th class="n hm">Dialed</th><th class="n">Calls</th><th class="n hm">Conversations</th><th class="n hm">Qualified</th><th class="n">Over</th><th class="n">Over&nbsp;$</th><th class="n hm">Service fee</th><th class="n">Total</th></tr>
-    ${bill.map(b=>`<tr class="${b.m===(PERIOD==="this"?thisMonth():PERIOD)?"sel":""}"><td>${monthName(b.m).slice(0,3)} '${b.m.slice(2,4)}${b.current?' <span class="tag">now</span>':""}</td><td class="n hm">${b.calls}</td><td class="n">${b.completed}</td><td class="n hm">${b.conversations}</td><td class="n hm">${b.qualified}</td><td class="n${b.over?" over":""}">${b.over||"—"}</td><td class="n${b.over?" over":""}">${b.over?money(b.overage):"—"}</td><td class="n hm">${b.fee?money(b.fee):"—"}</td><td class="n">${money(b.total)}</td></tr>`).join("")}
-    <tr class="tot"><td>Total</td><td class="n hm">${bill.reduce((s,b)=>s+b.calls,0)}</td><td class="n">${bill.reduce((s,b)=>s+b.completed,0)}</td><td class="n hm">${bill.reduce((s,b)=>s+b.conversations,0)}</td><td class="n hm">${bill.reduce((s,b)=>s+b.qualified,0)}</td><td class="n">${bill.reduce((s,b)=>s+b.over,0)||"—"}</td><td class="n">${money(bill.reduce((s,b)=>s+b.overage,0))}</td><td class="n hm">${money(bill.reduce((s,b)=>s+b.fee,0))}</td><td class="n">${money(bill.reduce((s,b)=>s+b.total,0))}</td></tr></table></div>
+    <div class="tablewrap"><table><tr><th>Month</th><th class="n hm">Dialed</th><th class="n">Completed</th><th class="n hm">Voicemails</th><th class="n hm">Qualified</th><th class="n">Over</th><th class="n">Over&nbsp;$</th><th class="n hm">Service fee</th><th class="n">Total</th></tr>
+    ${bill.map(b=>`<tr class="${b.m===(PERIOD==="this"?thisMonth():PERIOD)?"sel":""}"><td>${monthName(b.m).slice(0,3)} '${b.m.slice(2,4)}${b.current?' <span class="tag">now</span>':""}</td><td class="n hm">${b.calls}</td><td class="n">${b.completed}</td><td class="n hm">${b.vm}</td><td class="n hm">${b.qualified}</td><td class="n${b.over?" over":""}">${b.over||"—"}</td><td class="n${b.over?" over":""}">${b.over?money(b.overage):"—"}</td><td class="n hm">${b.fee?money(b.fee):"—"}</td><td class="n">${money(b.total)}</td></tr>`).join("")}
+    <tr class="tot"><td>Total</td><td class="n hm">${bill.reduce((s,b)=>s+b.calls,0)}</td><td class="n">${bill.reduce((s,b)=>s+b.completed,0)}</td><td class="n hm">${bill.reduce((s,b)=>s+b.vm,0)}</td><td class="n hm">${bill.reduce((s,b)=>s+b.qualified,0)}</td><td class="n">${bill.reduce((s,b)=>s+b.over,0)||"—"}</td><td class="n">${money(bill.reduce((s,b)=>s+b.overage,0))}</td><td class="n hm">${money(bill.reduce((s,b)=>s+b.fee,0))}</td><td class="n">${money(bill.reduce((s,b)=>s+b.total,0))}</td></tr></table></div>
     <p class="hint" style="margin-top:10px">Overage is calculated from the call platform; invoices come from Last Minute Media Deals. Questions: rich@lastminutemediadeals.com.</p>
   </div>
 
   <div class="panel">
     <div class="head"><h2>Call volume · ${label}</h2>
-      <p class="legend"><i style="background:rgba(255,255,255,.25)"></i>all calls <span style="margin-left:14px"></span><i style="background:#c9b56a"></i>conversations</p></div>
+      <p class="legend"><i style="background:rgba(255,255,255,.25)"></i>all calls <span style="margin-left:14px"></span><i style="background:#c9b56a"></i>completed</p></div>
     <div style="margin-top:14px">${chart(rows)}</div>
   </div>
 
